@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.1" />
-  <PackageReference Include="SharpSettings.MongoDB" Version="1.0.20" />
+  <PackageReference Include="SharpSettings.MongoDB" Version="1.1.1" />
   </ItemGroup>
 
 
