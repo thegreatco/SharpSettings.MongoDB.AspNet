@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpSettings.MongoDB.AspNet", "src\SharpSettings.MongoDB.AspNet\SharpSettings.MongoDB.AspNet.csproj", "{871EEC97-36A8-4B97-8FA3-689B62B73C1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpSettings.AspNet", "src\SharpSettings.MongoDB.AspNet\SharpSettings.AspNet.csproj", "{871EEC97-36A8-4B97-8FA3-689B62B73C1A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3CF330A5-B123-42A4-A942-CEC370AD919A}"
 EndProject
