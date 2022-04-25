@@ -20,22 +20,16 @@ namespace SharpSettings.AspNet
             _settingsWatcher = settingsWatcher;
         }
 
-        public override void Load()
+        public void Load()
         {
             var settings = _settingsWatcher.GetSettings();
             if (settings == null)
             {
                 _logger.LogDebug("Retrieved settings were null. This can happen with async data stores.");
             }
-
-		    var dbSettings = GetProperties(settings);
-            if (dbSettings == null)
-                return;
-                
-		    Data = dbSettings.ToDictionary(x => x.Item1, x => x.Item2.ToString());
         }
 
-        public override void Set(string key, string value)
+        public void Set(string key, string value)
         {
             throw new NotImplementedException();
         }
@@ -43,19 +37,27 @@ namespace SharpSettings.AspNet
         private static IDictionary<string, string> GetProperties(object obj, string currentFieldName = null)
         {
             if (obj == null) return null;
-            var stuffToReturn = new List<Tuple<string, object>>();
+            var stuffToReturn = new Dictionary<string, string>();
             var type = obj.GetType();
             if (type.IsArray)
             {
                 var objArray = (IEnumerable)obj;
                 var i = 0;
-                foreach(var it in objArray)
+                foreach (var it in objArray)
                 {
                     var props = GetProperties(it).ToArray();
                     if (props.Any())
-                        stuffToReturn.AddRange(props);
+                    {
+                        foreach (var (key, value) in props)
+                        {
+                            stuffToReturn.Add(key, value);
+                        }
+                    }
                     else
-                        stuffToReturn.Add(new Tuple<string, object>(string.Join(":", currentFieldName, i), it));
+                    {
+                        stuffToReturn.Add(string.Join(":", currentFieldName, i), it as string);
+                    }
+
                     i++;
                 }
             }
@@ -64,16 +66,23 @@ namespace SharpSettings.AspNet
                 foreach (var property in type.GetTypeInfo().DeclaredProperties.Where(x => x.PropertyType.GetTypeInfo().IsClass))
                 {
                     var val = property.GetValue(obj);
-                    if(val == null) continue;
+                    if (val == null) continue;
                     var props = GetProperties(val, currentFieldName == null ? property.Name : string.Join(":", currentFieldName, property.Name)).ToArray();
                     if (props.Any())
-                        stuffToReturn.AddRange(props);
+                    {
+                        foreach (var (key, value) in props)
+                        {
+                            stuffToReturn.Add(key, value);
+                        }
+                    }
                     else
-                        stuffToReturn.Add(new Tuple<string, object>(currentFieldName == null ? property.Name : string.Join(":", currentFieldName, property.Name), val));
+                    {
+                        stuffToReturn.Add(currentFieldName == null ? property.Name : string.Join(":", currentFieldName, property.Name), val as string);
+                    }
                 }
             }
 
-            return stuffToReturn.Where(x => x != null);
+            return stuffToReturn;
         }
 
         public bool TryGet(string key, out string value)
@@ -109,9 +118,9 @@ namespace SharpSettings.AspNet
             var dbSettings = GetProperties(settings);
             if (dbSettings != null)
             {
-                return dbSettings.Where(x => earlierKeys.Any(y => x.Key.StartsWith(y))).SelectMany(x => x);
+                return dbSettings.Where(x => earlierKeys.Any(y => x.Key.StartsWith(y))).Select(x => x.Key);
             }
-            return dbSettings
+            return Array.Empty<string>();
         }
     }
 }
